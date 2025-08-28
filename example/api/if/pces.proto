@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package pces;
+
+option go_package = "github.com/facebookincubator/pces/example/api/pces";
+
+// Certificate status information.
+message CertificateStatus {
+  string label = 1;
+  string type = 2;
+  int64 valid_after = 3;
+  int64 valid_before = 4;
+  optional string error_message = 5;
+}
+
+// Agent status information.
+message AgentStatus {
+  int64 uptime = 1;
+  repeated CertificateStatus certificates = 2;
+}
+
+// Request to renew certificates.
+message RenewRequest {
+  string label = 1;
+  string reason = 2;
+}
+
+message RenewResponse {
+  // Empty response
+}
+
+// Request to get agent status.
+message StatusRequest {
+  // Empty request
+}
+
+message StatusResponse {
+  AgentStatus status = 1;
+}
+
+// Request to get certificate data.
+message GetTLSCertRequest {
+  string label = 1;
+}
+
+message GetTLSCertResponse {
+  bytes cert_data = 1;
+}
+
+// Request to sign data.
+message SignWithTLSCertRequest {
+  string label = 1;
+  bytes data = 2;
+}
+
+message SignWithTLSCertResponse {
+  bytes signature = 1;
+}
+
+// PCeS service definition.
+service PCeSAgent {
+  // Renews a certificate identified by label.
+  rpc Renew(RenewRequest) returns (RenewResponse);
+
+  // Returns the status of the PCeS agent.
+  rpc Status(StatusRequest) returns (StatusResponse);
+
+  // Returns the certificate.
+  rpc GetTLSCert(GetTLSCertRequest) returns (GetTLSCertResponse);
+
+  // Signs data using the certificate's private key.
+  rpc SignWithTLSCert(SignWithTLSCertRequest) returns (SignWithTLSCertResponse);
+}
